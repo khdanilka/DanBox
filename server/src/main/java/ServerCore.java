@@ -37,6 +37,9 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     /////common.SocketThreadListener////////
     @Override
     public void readySocketClientThread(SocketThread socketThread) {
+
+        System.out.println("На стороне сервера есть сокет");
+
         clients.add(socketThread);
     }
 }
