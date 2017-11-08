@@ -3,12 +3,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class ServerSocketThread extends Thread {
+public class ScanPortServerThread extends Thread {
 
     private int port = 4444;
     private ServerSocketThreadListener eventListener;
 
-    public ServerSocketThread(ServerSocketThreadListener eventListener,int port) {
+    public ScanPortServerThread(ServerSocketThreadListener eventListener, int port) {
         this.eventListener = eventListener;
         this.port = port;
         start();
@@ -17,7 +17,7 @@ public class ServerSocketThread extends Thread {
     @Override
     public void run() {
 
-        System.out.println("ServerSocket started" + this.getName());
+        System.out.println("ScanPortServerThread started" + this.getName());
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             //serverSocket.setSoTimeout(timeout);

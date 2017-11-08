@@ -53,6 +53,7 @@ public class SocketThread extends Thread{
                         break;
                     case Messages.AUTH_ACCEPT:
                         handleAuthAnswer(splitArr[1]);
+                        eventListener.auth_answer("успех");
                         break;
                     case Messages.AUTH_ERROR:
                         eventListener.auth_answer("авторизация не удалась");
@@ -72,9 +73,10 @@ public class SocketThread extends Thread{
 
     private synchronized void saveDataToHost(InputStream in, String fileName, String fileSize) throws IOException {
 
-        String client = "client1";
-        //String fop ="./server/src/main/file_storage/" + client;
-        String fop ="./client/src/main/file_storage/" + client;
+        //String client = "client5";
+        String client = client_name;
+        String fop ="./server/src/main/file_storage/" + client;
+        //String fop ="./client/src/main/file_storage/" + client;
         File myPath = new File(fop);
 
         if (!myPath.mkdirs()) System.out.println(myPath.getPath());
@@ -100,9 +102,10 @@ public class SocketThread extends Thread{
 
     void sendDataToHost(String nameOfFIle) throws IOException {
 
-        String client = "client5";
-        //File file = new File("./client/src/main/file_storage/" + client + "/" + nameOfFIle); // server data
-        File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
+        //String client = "client1";
+        String client = client_name;
+        File file = new File("./client/src/main/file_storage/" + client + "/" + nameOfFIle); // server data
+        //File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
         System.out.println("размер файла" + file.length());
         try (InputStream in = new FileInputStream(file))
         {
@@ -145,6 +148,7 @@ public class SocketThread extends Thread{
 
     //client method
     void handleAuthAnswer(String login){
+        System.out.println("обработка входящего сообщения - " + login);
         client_name = login;
         eventListener.auth_answer("на клиенте все ок");
     }
@@ -184,20 +188,6 @@ public class SocketThread extends Thread{
         }
 
 
-    }
-
-    private void writeServiceDataToOut(String name, int size) throws IOException {
-
-        byte[] bytes = new byte[size];
-        for(int i = 0; i < bytes.length; i++){
-            bytes[i] = 0;
-        }
-        byte[] nameB = name.getBytes("UTF-8");
-
-        for(int i = 0; i <nameB.length; i++){
-            bytes[i] = nameB[i];
-        }
-        out.write(bytes);
     }
 
     private void writeDataToOut(InputStream in) throws IOException {

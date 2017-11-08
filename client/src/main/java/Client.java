@@ -21,32 +21,20 @@ public class Client implements SocketThreadListener{
             //cl.socketThread.sendDataToHost();
             cl.auth_request();
 
-//            sendFiles.add("dracula.jpg");
-//            sendFiles.add("text.txt");
-//            sendFiles.add("123.pdf");
-            //cl.sendFilesToServer();
+            sendFiles.add("dracula.jpg");
+            sendFiles.add("text.txt");
+            sendFiles.add("123.pdf");
 
-            getFiles.add("dracula.jpg");
-            getFiles.add("text.txt");
-            getFiles.add("123.pdf");
-            cl.getFilesFromServer();
+//            cl.sendFilesToServer();
+
+//            getFiles.add("dracula.jpg");
+//            getFiles.add("text.txt");
+//            getFiles.add("123.pdf");
+//            cl.getFilesFromServer();
 
         } catch (IOException e){
             e.printStackTrace();
         }
-
-
-//        sendFiles.add("dracula.jpg");
-//        sendFiles.add("text.txt");
-//        sendFiles.add("123.pdf");
-//
-//        sendFiles.remove(1);
-//
-//        System.out.println(sendFiles.get(0));
-
-
-
-
     }
 
     @Override
@@ -66,7 +54,11 @@ public class Client implements SocketThreadListener{
 
     @Override
     public void auth_answer(String msg){
-        System.out.println(msg);
+
+        if (msg.equals("успех")) {
+            sendFilesToServer();
+        }
+        else  System.out.println(msg);
     }
 
 

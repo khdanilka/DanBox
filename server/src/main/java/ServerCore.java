@@ -5,7 +5,7 @@ import java.util.Vector;
 public class ServerCore implements ServerSocketThreadListener, SocketThreadListener {
 
     private int port;
-    private ServerSocketThread serverSocketThread;
+    private ScanPortServerThread serverSocketThread;
     private Vector<SocketThread> clients = new Vector<>();
     private String[] users = {"client1","123"};
 
@@ -21,7 +21,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
         }
         //putLog("сервер запущен");
         System.out.println("сервер запущен");
-        serverSocketThread = new ServerSocketThread(this,port);
+        serverSocketThread = new ScanPortServerThread(this,port);
     }
 
     public void stopListening(){
