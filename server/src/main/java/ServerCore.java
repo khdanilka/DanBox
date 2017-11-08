@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Vector;
 
@@ -6,7 +7,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
 
     private int port;
     private ScanPortServerThread serverSocketThread;
-    private Vector<SocketThread> clients = new Vector<>();
+    private Vector<ServerSocketThread> clients = new Vector<>();
     private String[] users = {"client1","123"};
 
     public ServerCore(int port) {
@@ -28,10 +29,42 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
 
     }
 
+    @Override
+    public void handleIncomingMessage(String str, SocketThread socketThread) {
+
+        ServerSocketThread serverSocketThread = (ServerSocketThread) socketThread;
+
+        System.out.println(str);
+        String[] splitArr = str.split(Messages.DEL);
+
+        switch (splitArr[0]) {
+            case Messages.POST_FILE:
+                try {
+                    socketThread.saveDataToHost(splitArr[1],splitArr[2]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Messages.GET_FILE:
+                try {
+                    socketThread.sendDataToHost(splitArr[1]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Messages.AUTH_REQUEST:
+                serverSocketThread.handleAuthRequest(splitArr[1],splitArr[2]);
+                break;
+            default:
+                //System.out.println("UNKHOWN request");
+        }
+
+    }
+
     /////forserver.ServerSocketThreadListener/////
     @Override
     public void socketAccepted(Socket socket) {
-        new SocketThread(this,socket, true);
+        new ServerSocketThread(this,socket);
     }
 
 
@@ -41,7 +74,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
 
         System.out.println("На стороне сервера есть сокет");
 
-        clients.add(socketThread);
+        clients.add((ServerSocketThread)socketThread);
     }
 
     @Override

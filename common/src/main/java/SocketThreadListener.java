@@ -4,4 +4,6 @@ public interface SocketThreadListener {
     void auth_answer(String msg);
     void sendFilesToServer();
     void getFilesFromServer();
+
+    void handleIncomingMessage(String str, SocketThread socketThread);
 }
