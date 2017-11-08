@@ -7,6 +7,7 @@ public class Messages {
     public static final String AUTH_REQUEST = "/auth_request";
     public static final String AUTH_ACCEPT = "/auth_accept";
     public static final String AUTH_ERROR = "/auth_error";
+    public static final String SUCCESS = "/success";
 
     public static final String DEL = "::";
 
@@ -46,6 +47,11 @@ public class Messages {
 
     public static byte[] messageAuthError(String msg){
         String name = AUTH_ERROR + DEL + msg;
+        return createByteMessageFromString(name);
+    }
+
+    public static byte[] messageSuccess(){
+        String name = SUCCESS;
         return createByteMessageFromString(name);
     }
 

@@ -57,6 +57,8 @@ public class SocketThread extends Thread{
                     case Messages.AUTH_ERROR:
                         eventListener.auth_answer("авторизация не удалась");
                         break;
+                    case Messages.SUCCESS:
+                        eventListener.sendFilesToServer();
                     default:
                         //System.out.println("UNKHOWN request");
                         continue;
@@ -70,9 +72,9 @@ public class SocketThread extends Thread{
 
     private synchronized void saveDataToHost(InputStream in, String fileName, String fileSize) throws IOException {
 
-        String client = "client5";
-        String fop ="./server/src/main/file_storage/" + client;
-        //String fop ="./client/src/main/file_storage/" + client;
+        String client = "client1";
+        //String fop ="./server/src/main/file_storage/" + client;
+        String fop ="./client/src/main/file_storage/" + client;
         File myPath = new File(fop);
 
         if (!myPath.mkdirs()) System.out.println(myPath.getPath());
@@ -92,14 +94,15 @@ public class SocketThread extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        if (isServerThread) out.write(Messages.messageSuccess());
+        else eventListener.getFilesFromServer();
     }
 
     void sendDataToHost(String nameOfFIle) throws IOException {
 
-        String client = "client1";
-        File file = new File("./client/src/main/file_storage/" + client + "/" + nameOfFIle); // server data
-        //File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
+        String client = "client5";
+        //File file = new File("./client/src/main/file_storage/" + client + "/" + nameOfFIle); // server data
+        File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
         System.out.println("размер файла" + file.length());
         try (InputStream in = new FileInputStream(file))
         {

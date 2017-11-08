@@ -56,4 +56,14 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     public void auth_answer(String msg) {
         System.out.println(msg);
     }
+
+    @Override
+    public void sendFilesToServer() {
+        System.out.println("сервер пока не реагирует на сообщение Success");
+    }
+
+    @Override
+    public void getFilesFromServer() {
+        System.out.println("сервер пока не реагирует на сообшение о получение файлов");
+    }
 }
