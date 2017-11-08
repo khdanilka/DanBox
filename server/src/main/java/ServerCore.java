@@ -7,6 +7,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     private int port;
     private ServerSocketThread serverSocketThread;
     private Vector<SocketThread> clients = new Vector<>();
+    private String[] users = {"client1","123"};
 
     public ServerCore(int port) {
         this.port = port;
@@ -30,7 +31,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     /////forserver.ServerSocketThreadListener/////
     @Override
     public void socketAccepted(Socket socket) {
-        new SocketThread(this,socket);
+        new SocketThread(this,socket, true);
     }
 
 
@@ -41,5 +42,18 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
         System.out.println("На стороне сервера есть сокет");
 
         clients.add(socketThread);
+    }
+
+    @Override
+    public boolean checkUserInBD(String login, String pass) {
+
+        if (users[0].equals(login) && users[1].equals(pass)) return true;
+
+        return false;
+    }
+
+    @Override
+    public void auth_answer(String msg) {
+        System.out.println(msg);
     }
 }

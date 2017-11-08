@@ -7,10 +7,17 @@ public class SocketThread extends Thread{
     private final Socket socket;
     private final SocketThreadListener eventListener;
     private OutputStream out;
+    private String client_name;
+    private boolean isServerThread;
 
-    public SocketThread(SocketThreadListener eventListener,Socket socket){
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
+    }
+
+    public SocketThread(SocketThreadListener eventListener, Socket socket, boolean isServerThread){
         this.eventListener = eventListener;
         this.socket = socket;
+        this.isServerThread = isServerThread;
         try {
             out = socket.getOutputStream();
         } catch (IOException e) {
@@ -28,16 +35,27 @@ public class SocketThread extends Thread{
             InputStream in = socket.getInputStream();
             while (!isInterrupted())
             {
-                byte[] b = new byte[20];
+                byte[] b = new byte[Messages.MESSAGE_SIZE];
                 in.read(b, 0, b.length);
                 String str = new String(b, "UTF-8").trim();
+                System.out.println(str);
+                String[] splitArr = str.split(Messages.DEL);
 
-                switch (str) {
+                switch (splitArr[0]) {
                     case Messages.POST_FILE:
-                        saveDataToHost(in);
+                        saveDataToHost(in,splitArr[1],splitArr[2]);
                         break;
                     case Messages.GET_FILE:
-                        sendDataToHost();
+                        sendDataToHost(splitArr[1]);
+                        break;
+                    case Messages.AUTH_REQUEST:
+                        handleAuthRequest(splitArr[1],splitArr[2]);
+                        break;
+                    case Messages.AUTH_ACCEPT:
+                        handleAuthAnswer(splitArr[1]);
+                        break;
+                    case Messages.AUTH_ERROR:
+                        eventListener.auth_answer("авторизация не удалась");
                         break;
                     default:
                         //System.out.println("UNKHOWN request");
@@ -50,26 +68,25 @@ public class SocketThread extends Thread{
         }
     }
 
-    private void saveDataToHost(InputStream in) throws IOException {
+    private synchronized void saveDataToHost(InputStream in, String fileName, String fileSize) throws IOException {
 
-        byte[] b = new byte[100];
-        in.read(b, 0, b.length);
-        String str = new String(b, "UTF-8");
-        String client = "client2";
-        // String fop ="./server/src/main/file_storage/" + client;
-        String fop ="./client/src/main/file_storage/" + client;
+        String client = "client5";
+        String fop ="./server/src/main/file_storage/" + client;
+        //String fop ="./client/src/main/file_storage/" + client;
         File myPath = new File(fop);
 
         if (!myPath.mkdirs()) System.out.println(myPath.getPath());
 
-        OutputStream outS = new FileOutputStream(fop +"/" + str.trim());
+        OutputStream outS = new FileOutputStream(fop +"/" + fileName);
 
         byte[] bytes = new byte[16 * 1024];
-        int count;
-        while ((count = in.read(bytes)) > 0) {
-            outS.write(bytes, 0, count);
-        }
+        long come = Long.valueOf(fileSize);
 
+        while (come > 0) {
+            int count = in.read(bytes);
+            outS.write(bytes, 0, count);
+            come-=count;
+        }
         try {
             outS.close();
         } catch (IOException e) {
@@ -78,29 +95,91 @@ public class SocketThread extends Thread{
 
     }
 
-    void sendDataToHost() throws IOException {
+    void sendDataToHost(String nameOfFIle) throws IOException {
 
-        String name = "dracula.jpg";
         String client = "client1";
-        //File file = new File("./client/src/main/file_storage/" + client + "/" + name); // server data
-        File file = new File("./server/src/main/file_storage/" + client + "/" + name);
-                try (
-            InputStream in = new FileInputStream(file)){
-            writeServiceDataToOut(Messages.POST_FILE,20);
-            writeServiceDataToOut(name,100);
+        File file = new File("./client/src/main/file_storage/" + client + "/" + nameOfFIle); // server data
+        //File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
+        System.out.println("размер файла" + file.length());
+        try (InputStream in = new FileInputStream(file))
+        {
+            byte[] serviceB = Messages.messagePost(nameOfFIle,String.valueOf(file.length()));
+            synchronized (out) {
+                out.write(serviceB);
+            }
             writeDataToOut(in);
-            out.flush();
+            //out.flush();
         }
 
     }
 
-    void getRequest(){
+    //client method
+    void getRequest(String nameOfFile){
 
         try {
-            writeServiceDataToOut(Messages.GET_FILE,20);
+            byte[] serviceB = Messages.messageGet(nameOfFile);
+            synchronized (out) {
+                out.write(serviceB);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    //client method
+    void sendAuthRequest(String login, String pass){
+
+        byte[] auth = Messages.messageAuth(login,pass);
+        try {
+            synchronized (out) {
+                out.write(auth);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //client method
+    void handleAuthAnswer(String login){
+        client_name = login;
+        eventListener.auth_answer("на клиенте все ок");
+    }
+
+    //server method
+    void handleAuthRequest(String login, String pass){
+
+        if (eventListener.checkUserInBD(login,pass)) {
+            sendAuthAnswerAccept(login);
+            client_name = login;
+            eventListener.auth_answer("на сервере все ок, юзер на месте " + login);
+        } else {
+            sendAuthAnswerError();
+        }
+
+    }
+
+    //server method
+    void sendAuthAnswerAccept(String login){
+
+        byte[] accept = Messages.messageAuthAccepted(login);
+        try {
+            out.write(accept);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //server method
+    void sendAuthAnswerError(){
+
+        byte[] error = Messages.messageAuthError("не верный логин");
+        try {
+            out.write(error);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -121,8 +200,11 @@ public class SocketThread extends Thread{
     private void writeDataToOut(InputStream in) throws IOException {
         byte[] bytesData = new byte[16 * 1024];
         int count;
-        while ((count = in.read(bytesData)) > 0) {
-            out.write(bytesData, 0, count);
+        synchronized (out) {
+            while ((count = in.read(bytesData)) > 0) {
+                out.write(bytesData, 0, count);
+
+            }
         }
     }
 

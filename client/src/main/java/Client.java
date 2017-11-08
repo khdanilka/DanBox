@@ -15,19 +15,41 @@ public class Client implements SocketThreadListener{
 
         try{
             Socket socket = new Socket(host,port);
-            cl.socketThread = new SocketThread(cl,socket);
+            cl.socketThread = new SocketThread(cl,socket, false);
             //cl.socketThread.sendDataToHost();
-            cl.socketThread.getRequest();
+            cl.auth_request();
+            cl.socketThread.sendDataToHost("dracula.jpg");
+            cl.socketThread.sendDataToHost("text.txt");
+            cl.socketThread.sendDataToHost("123.pdf");
         } catch (IOException e){
             e.printStackTrace();
         }
 
     }
 
-
-
     @Override
     public void readySocketClientThread(SocketThread socketThread) {
         System.out.println("Socket Thread created for client");
+        //auth_request();
+    }
+
+    private void auth_request() {
+
+        String login = "client1";
+        String pass = "123";
+
+        socketThread.sendAuthRequest(login,pass);
+
+    }
+
+    @Override
+    public void auth_answer(String msg){
+        System.out.println(msg);
+    }
+
+
+    @Override
+    public boolean checkUserInBD(String login, String pass) {
+        return false;
     }
 }
