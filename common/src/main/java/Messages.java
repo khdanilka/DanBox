@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 public class Messages {
@@ -8,6 +9,8 @@ public class Messages {
     public static final String AUTH_ACCEPT = "/auth_accept";
     public static final String AUTH_ERROR = "/auth_error";
     public static final String SUCCESS = "/success";
+    public static final String GET_FILES_LIST = "/get_files_list";
+    public static final String FILE_LIST = "/file_list";
 
     public static final String DEL = "::";
 
@@ -53,6 +56,30 @@ public class Messages {
     public static byte[] messageSuccess(){
         String name = SUCCESS;
         return createByteMessageFromString(name);
+    }
+
+    public static byte[] messageGetFilesList(){
+        String name = GET_FILES_LIST;
+        return createByteMessageFromString(name);
+    }
+
+    public static byte[] messageSendFileList(File[] f){
+
+        StringBuffer stb = new StringBuffer().append(FILE_LIST);
+        if (f.length == 0) {
+            stb.append(DEL);
+            stb.append(0);
+            return createByteMessageFromString(String.valueOf(stb));
+        }
+        stb.append(DEL);
+        stb.append(1);
+        for (int i = 0; i < f.length; i++) {
+           if (f[i].isFile()) {
+               stb.append(DEL);
+               stb.append(f[i].getName());
+           }
+       }
+       return createByteMessageFromString(String.valueOf(stb));
     }
 
 

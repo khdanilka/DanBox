@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -41,6 +42,16 @@ public class ServerSocketThread extends SocketThread {
             e.printStackTrace();
         }
 
+    }
 
+    void sendListOfFiles(){
+
+        File[] f = eventListener.getListOfFilesWithPath(this.SERVER_PATH + client_name);
+        byte[] flb = Messages.messageSendFileList(f);
+        try {
+            out.write(flb);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

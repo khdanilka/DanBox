@@ -1,6 +1,8 @@
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class ServerCore implements ServerSocketThreadListener, SocketThreadListener {
@@ -55,6 +57,8 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
             case Messages.AUTH_REQUEST:
                 serverSocketThread.handleAuthRequest(splitArr[1],splitArr[2]);
                 break;
+            case Messages.GET_FILES_LIST:
+                serverSocketThread.sendListOfFiles();
             default:
                 //System.out.println("UNKHOWN request");
         }
@@ -98,5 +102,10 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     @Override
     public void getFilesFromServer() {
         System.out.println("сервер пока не реагирует на сообшение о получение файлов");
+    }
+
+    @Override
+    public File[] getListOfFilesWithPath(String url) {
+        return new File(url).listFiles();
     }
 }

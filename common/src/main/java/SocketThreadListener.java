@@ -1,3 +1,5 @@
+import java.io.File;
+
 public interface SocketThreadListener {
     void readySocketClientThread(SocketThread socketThread);
     boolean checkUserInBD(String login, String pass);
@@ -6,4 +8,5 @@ public interface SocketThreadListener {
     void getFilesFromServer();
 
     void handleIncomingMessage(String str, SocketThread socketThread);
+    File[] getListOfFilesWithPath(String url);
 }

@@ -40,4 +40,16 @@ public class ClientSocketThread extends SocketThread {
         client_name = login;
         eventListener.auth_answer("на клиенте все ок");
     }
+
+    void getFilesRequest(){
+        byte[] auth = Messages.messageGetFilesList();
+        try {
+            synchronized (out) {
+                out.write(auth);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

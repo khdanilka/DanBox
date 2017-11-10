@@ -4,8 +4,8 @@ import java.net.Socket;
 
 public class SocketThread extends Thread{
 
-    private final String CLIENT_PATH = "./client/src/main/file_storage/";
-    private final String SERVER_PATH = "./server/src/main/file_storage/";
+    protected final String CLIENT_PATH = "./client/src/main/file_storage/";
+    protected final String SERVER_PATH = "./server/src/main/file_storage/";
 
 
     private final Socket socket;
@@ -58,8 +58,8 @@ public class SocketThread extends Thread{
     protected synchronized void saveDataToHost(String fileName, String fileSize) throws IOException {
 
         //String client = "client5";
-        String client = client_name;
-        String fop = rightPath + client;
+        //String client = client_name;
+        String fop = rightPath + client_name;
         //String fop ="./client/src/main/file_storage/" + client;
         File myPath = new File(fop);
 
@@ -87,8 +87,8 @@ public class SocketThread extends Thread{
     protected void sendDataToHost(String nameOfFIle) throws IOException {
 
         //String client = "client1";
-        String client = client_name;
-        File file = new File(rightPath + client + "/" + nameOfFIle); // server data
+        //String client = client_name;
+        File file = new File(rightPath + client_name + "/" + nameOfFIle); // server data
         //File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
         System.out.println("размер файла" + file.length());
         try (InputStream ins = new FileInputStream(file))
