@@ -1,6 +1,11 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ServerSocketThread extends SocketThread {
 
@@ -59,16 +64,51 @@ public class ServerSocketThread extends SocketThread {
             }
         }
 
-        byte[] flb = Messages.messageSendFileList(String.valueOf(stb.length()));
+        byte[] bStb = new byte[0];
+        try {
+            bStb = String.valueOf(stb).getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        byte[] flb = Messages.messageSendFileList(String.valueOf(bStb.length));
 
         try {
             out.write(flb);
-            if (stb.length()!=0) out.write(String.valueOf(stb).getBytes());
+            //System.out.println(String.valueOf(stb));
+            if (stb.length() != 0) out.write(bStb);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    public void deleteFileFromServerDirectory(String fileName){
+
+        String k = "/server/src/main/file_storage/";
+        String dst = System.getProperty("user.dir") + k + client_name + "/" + fileName;
+
+        Path p = Paths.get(URI.create("file:" + dst));
+
+        try {
+            if (Files.deleteIfExists(p)) sendSuccessDeleted();
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
+        }
 
     }
+
+    public void sendSuccessDeleted(){
+
+        byte[] deleted = Messages.messageDeleted();
+        try {
+            out.write(deleted);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

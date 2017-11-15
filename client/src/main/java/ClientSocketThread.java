@@ -59,16 +59,26 @@ public class ClientSocketThread extends SocketThread {
 
         if (size.equals("0")) return "";
 
-        byte[] bytes = new byte[Integer.valueOf(size)];
+        byte[] bytes = new byte[Integer.valueOf(size) + 10];
         String str = "";
         try {
-            in.read(bytes);
+            System.out.println("прочитано байт " + in.read(bytes));
             str = new String(bytes, "UTF-8");
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return str;
+    }
+
+    void socketDeleteFileOnServer(String name){
+
+        byte[] auth = Messages.messageDeleteFile(name);
+        try {
+            out.write(auth);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

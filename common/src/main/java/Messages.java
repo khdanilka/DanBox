@@ -11,6 +11,8 @@ public class Messages {
     public static final String SUCCESS = "/success";
     public static final String GET_FILES_LIST = "/get_files_list";
     public static final String FILE_LIST = "/file_list";
+    public static final String DELETE_FILE_FROM_SERVER = "/delete_file";
+    public static final String FILE_DELETED = "/file_deleted";
 
     public static final String DEL = "::";
 
@@ -89,7 +91,15 @@ public class Messages {
         return createByteMessageFromString(String.valueOf(name));
     }
 
+    public static byte[] messageDeleteFile(String nameOfFile){
+        String name = DELETE_FILE_FROM_SERVER + DEL + nameOfFile;
+        return createByteMessageFromString(String.valueOf(name));
+    }
 
+    public static byte[] messageDeleted(){
+        String name = FILE_DELETED + DEL;
+        return createByteMessageFromString(String.valueOf(name));
+    }
 
     private static byte[] createByteMessageFromString(String str){
 

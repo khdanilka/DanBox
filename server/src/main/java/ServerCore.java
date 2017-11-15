@@ -2,6 +2,10 @@
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -59,6 +63,9 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
                 break;
             case Messages.GET_FILES_LIST:
                 serverSocketThread.sendListOfFiles();
+                break;
+            case Messages.DELETE_FILE_FROM_SERVER:
+                serverSocketThread.deleteFileFromServerDirectory(splitArr[1]);
             default:
                 //System.out.println("UNKHOWN request");
         }
@@ -109,7 +116,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
         return new File(url).listFiles();
     }
 
-    
+
 
 
 }

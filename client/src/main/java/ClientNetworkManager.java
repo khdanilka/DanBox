@@ -64,18 +64,9 @@ public class ClientNetworkManager implements SocketThreadListener {
 //            e.printStackTrace();
 //        }
 
-
-        String str ="/file_list::1::0_820a5_90f20788_orig.jpeg::1.txt::123.pdf::2017-09-22.jpg::401.png::dracula.jpg::INS\n" +
-                "TALL.txt::text.txt::VID-20171115-WA0011.mp4";
-
-        String s = str.replaceAll("\n", "");
-
-        System.out.println(s);
-
-
     }
 
-    static ClientNetworkManager clientNetworkManager;
+    private static ClientNetworkManager clientNetworkManager;
     private static MainNetworkManagerListener clm;
     private static LoginNetworkManagerListener logListener;
 
@@ -132,6 +123,27 @@ public class ClientNetworkManager implements SocketThreadListener {
         }
     }
 
+    public void deleteFileFromUserDirectory(String fileName){
+
+        String k = "/client/src/main/file_storage/";
+        String dst = System.getProperty("user.dir") + k + socketThread.client_name + "/" + fileName;
+
+        Path p = Paths.get(URI.create("file:" + dst));
+
+        try {
+            if (Files.deleteIfExists(p)) getClientListOfFilesWithPath();
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
+        }
+
+    }
+
+    public void deleteFileFromServer(String filename){
+
+        socketThread.socketDeleteFileOnServer(filename);
+    }
+
 
     public void getClientListOfFilesWithPath() {
 
@@ -183,6 +195,9 @@ public class ClientNetworkManager implements SocketThreadListener {
             case Messages.FILE_LIST:
                 String answer = ((ClientSocketThread) socketThread).getListOfFileFromServer(splitArr[1]);
                 printFileList(answer);
+                break;
+            case Messages.FILE_DELETED:
+                getServerFilesList();
                 break;
             default:
                 //System.out.println("UNKHOWN request");

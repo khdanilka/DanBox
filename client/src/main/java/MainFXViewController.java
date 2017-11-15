@@ -86,7 +86,7 @@ public class MainFXViewController implements MainNetworkManagerListener {
         java.io.File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             //openFile(file);
-            System.out.println("мы выбрали файл " + file.getAbsolutePath());
+            //System.out.println("мы выбрали файл " + file.getAbsolutePath());
             clNetworkManager.addFileToUsersDirectory(file.getAbsolutePath(),file.getName());
         }
     }
@@ -97,25 +97,16 @@ public class MainFXViewController implements MainNetworkManagerListener {
 
     @Override
     public void listClientsFiles(ArrayList<String> arrayList) {
-
-        if(!arrayList.isEmpty()) {
-
-            clientFilesList = FXCollections.observableList(getClientsFileFrom(arrayList));
-            columnInfo.setCellValueFactory(new PropertyValueFactory<>("file"));
-            client_list.setItems(clientFilesList);
-        }
-
+        clientFilesList = FXCollections.observableList(getClientsFileFrom(arrayList));
+        columnInfo.setCellValueFactory(new PropertyValueFactory<>("file"));
+        client_list.setItems(clientFilesList);
     }
 
     @Override
     public void listServerFiles(ArrayList<String> arrayList) {
-
-        if(!arrayList.isEmpty()){
-            serverFilesList = FXCollections.observableList(getClientsFileFrom(arrayList));
-            columnServer.setCellValueFactory(new PropertyValueFactory<>("file"));
-            server_list.setItems(serverFilesList);
-
-        }
+        serverFilesList = FXCollections.observableList(getClientsFileFrom(arrayList));
+        columnServer.setCellValueFactory(new PropertyValueFactory<>("file"));
+        server_list.setItems(serverFilesList);
     }
 
     public class FileMain {
@@ -140,6 +131,24 @@ public class MainFXViewController implements MainNetworkManagerListener {
         return cl;
     }
 
+    @FXML
+    private void deleteServerFile(ActionEvent actionEvent){
+
+        FileMain selectedFile = (FileMain) server_list.getSelectionModel().getSelectedItem();
+        if ( selectedFile!= null) {
+            clNetworkManager.deleteFileFromServer(selectedFile.getFile());
+        }
+    }
+
+    @FXML
+    private void deleteClientFile(ActionEvent actionEvent){
+
+        FileMain selectedFile = (FileMain) client_list.getSelectionModel().getSelectedItem();
+        if ( selectedFile!= null) {
+            clNetworkManager.deleteFileFromUserDirectory(selectedFile.getFile());
+        }
+
+    }
 
 
 }
