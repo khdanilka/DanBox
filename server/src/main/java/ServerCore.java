@@ -108,4 +108,8 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     public File[] getListOfFilesWithPath(String url) {
         return new File(url).listFiles();
     }
+
+    
+
+
 }
