@@ -2,6 +2,9 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class LoginController implements LoginNetworkManagerListener {
@@ -9,9 +12,21 @@ public class LoginController implements LoginNetworkManagerListener {
 
     ActionEvent actionEvent;
 
+    @FXML
+    private TextField txtLogin;
+
+    @FXML
+    private PasswordField txtPass;
+
+    ClientNetworkManager clNetwork = ClientNetworkManager.getClientNetworkManager(null,this);
+
+
     public void logIn(ActionEvent actionEvent) {
 
-        ClientNetworkManager.getClientNetworkManager(null,this).auth_request();
+        String login = txtLogin.getText();
+        String pass = txtPass.getText();
+
+        clNetwork.auth_request(login,pass);
         this.actionEvent = actionEvent;
 
     }
@@ -24,10 +39,14 @@ public class LoginController implements LoginNetworkManagerListener {
                 javafx.scene.Node source = (javafx.scene.Node) actionEvent.getSource();
                 Stage stage = (Stage) source.getScene().getWindow();
                 stageCloseOutThread(stage);
-                System.out.println("успешная авторизация");
+                //System.out.println("успешная авторизация");
+                clNetwork.getClientListOfFilesWithPath();
+                clNetwork.getServerFilesList();
+
                 break;
             case ClientNetworkManager.ERROR:
                 System.out.println("ошибка авторизации");
+
                 break;
             default:
                 throw new RuntimeException("неизвестный ответ на авторизацию " + message);

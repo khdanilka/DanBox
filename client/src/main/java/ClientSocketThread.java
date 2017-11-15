@@ -1,4 +1,7 @@
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
 public class ClientSocketThread extends SocketThread {
@@ -50,6 +53,22 @@ public class ClientSocketThread extends SocketThread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    String getListOfFileFromServer(String size) {
+
+        if (size.equals("0")) return "";
+
+        byte[] bytes = new byte[Integer.valueOf(size)];
+        String str = "";
+        try {
+            in.read(bytes);
+            str = new String(bytes, "UTF-8");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return str;
     }
 
 }

@@ -1,5 +1,11 @@
 import java.io.*;
 import java.net.Socket;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class ClientNetworkManager implements SocketThreadListener {
@@ -15,39 +21,66 @@ public class ClientNetworkManager implements SocketThreadListener {
     private static Vector<String> sendFiles = new Vector<>();
     private static Vector<String> getFiles = new Vector<>();
 
-//    public static void main(String[] args) throws IOException {
-//
+    public static void main(String[] args) throws IOException {
+
 //        String host = "127.0.0.1";
 //        int port = 4444;
 //
-//        //ClientNetworkManager cl = new ClientNetworkManager(this);
+//        ClientNetworkManager cl = new ClientNetworkManager(null,null);
 //
 //        try {
 //
 //            Socket socket = new Socket(host, port);
 //            cl.socketThread = new ClientSocketThread(cl, socket);
 //            //cl.socketThread.sendDataToHost();
-//            cl.auth_request();
-//
-//            sendFiles.add("dracula.jpg");
-//            sendFiles.add("text.txt");
-//            sendFiles.add("123.pdf");
-////            cl.sendFilesToServer();
-//
-//            getFiles.add("dracula.jpg");
-//            getFiles.add("text.txt");
-//            getFiles.add("123.pdf");
+//            cl.auth_request("client1","123");
+////
+////            sendFiles.add("dracula.jpg");
+////            sendFiles.add("text.txt");
+////            sendFiles.add("123.pdf");
+//////            cl.sendFilesToServer();
+////
+////            getFiles.add("dracula.jpg");
+////            getFiles.add("text.txt");
+////            getFiles.add("123.pdf");
 ////            cl.getFilesFromServer();
 //        } catch (IOException e){
 //            e.printStackTrace();
 //        }
+
+//        File f = new File(".");
 //
-//    }
+//        System.out.println(System.getProperty("user.dir"));
+//
+//
+//
+//        Path p = Paths.get(URI.create("file:/Users/android/Documents/2017-09-22.jpg"));
+//        Path p1 = Paths.get(URI.create("file:/Users/android/Desktop/DanBox/client/src/main/file_storage/client1/2017-09-22.jpg"));
+//
+//
+//        try {
+//            Files.copy(p, p1, StandardCopyOption.REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+        String str ="/file_list::1::0_820a5_90f20788_orig.jpeg::1.txt::123.pdf::2017-09-22.jpg::401.png::dracula.jpg::INS\n" +
+                "TALL.txt::text.txt::VID-20171115-WA0011.mp4";
+
+        String s = str.replaceAll("\n", "");
+
+        System.out.println(s);
+
+
+    }
 
     static ClientNetworkManager clientNetworkManager;
+    private static MainNetworkManagerListener clm;
+    private static LoginNetworkManagerListener logListener;
 
 
-    public static ClientNetworkManager getClientNetworkManager(ClientNetworkManagerListener clm, LoginNetworkManagerListener loglistner){
+    public static ClientNetworkManager getClientNetworkManager(MainNetworkManagerListener clm, LoginNetworkManagerListener loglistner){
 
        if (clientNetworkManager == null){
             clientNetworkManager = new ClientNetworkManager(clm, loglistner);
@@ -55,19 +88,14 @@ public class ClientNetworkManager implements SocketThreadListener {
        if (ClientNetworkManager.clm == null) ClientNetworkManager.clm = clm;
        if (ClientNetworkManager.logListener == null) ClientNetworkManager.logListener = loglistner;
        return clientNetworkManager;
-
     }
 
-    private static ClientNetworkManagerListener clm;
-    private static LoginNetworkManagerListener logListener;
-
-    private ClientNetworkManager(ClientNetworkManagerListener clm, LoginNetworkManagerListener loglistner){
+    private ClientNetworkManager(MainNetworkManagerListener clm, LoginNetworkManagerListener loglistner){
         this(clm);
         ClientNetworkManager.logListener = loglistner;
     }
 
-
-    private ClientNetworkManager(ClientNetworkManagerListener clm){
+    private ClientNetworkManager(MainNetworkManagerListener clm){
         ClientNetworkManager.clm = clm;
         Socket socket = null;
         try {
@@ -86,13 +114,48 @@ public class ClientNetworkManager implements SocketThreadListener {
 
     }
 
+    public void addFileToUsersDirectory(String str, String fileName){
+
+        String k = "/client/src/main/file_storage/";
+        String dst = System.getProperty("user.dir") + k + socketThread.client_name + "/" + fileName;
+        File newF = new File(dst);
+        if (!newF.mkdirs()) System.out.println(newF.getPath());
+
+        Path p = Paths.get(URI.create("file:" + dst));
+        Path s = Paths.get(URI.create("file:" + str));
+
+        try {
+            Files.copy(s, p, StandardCopyOption.REPLACE_EXISTING);
+            getClientListOfFilesWithPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void getClientListOfFilesWithPath() {
+
+        String url =  socketThread.CLIENT_PATH + socketThread.client_name;
+
+        File[] fl = new File(url).listFiles();
+        ArrayList<String> arr = new ArrayList<>();
+        if (fl == null) {
+            clm.listClientsFiles(arr);
+            return;
+        }
+        for(File f: fl){
+            if(!f.getName().startsWith(".")) arr.add(f.getName());
+        }
+        clm.listClientsFiles(arr);
+    }
+
+
 
     @Override
     public void handleIncomingMessage(String str, SocketThread socketThread) {
 
         ClientSocketThread clientSocketThread = (ClientSocketThread) socketThread;
 
-        System.out.println(str);
         String[] splitArr = str.split(Messages.DEL);
 
         switch (splitArr[0]) {
@@ -102,6 +165,7 @@ public class ClientNetworkManager implements SocketThreadListener {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                clm.gettingFileFromServerResponse(Messages.SUCCESS);
                 break;
             case Messages.AUTH_ACCEPT:
                 clientSocketThread.handleAuthAnswer(splitArr[1]);
@@ -113,10 +177,12 @@ public class ClientNetworkManager implements SocketThreadListener {
                 logListener.authResponse(ERROR);
                 break;
             case Messages.SUCCESS:
+                clm.addingFileToServerResponse(Messages.SUCCESS);
                 sendFilesToServer();
                 break;
             case Messages.FILE_LIST:
-                printFileList(splitArr);
+                String answer = ((ClientSocketThread) socketThread).getListOfFileFromServer(splitArr[1]);
+                printFileList(answer);
                 break;
             default:
                 //System.out.println("UNKHOWN request");
@@ -124,16 +190,17 @@ public class ClientNetworkManager implements SocketThreadListener {
 
     }
 
-    void printFileList(String[] splitArr){
+    void printFileList(String answer){
 
-        if (splitArr[1].equals("0"))
-            System.out.println("на сервере ничего нету");
-        else {
-            for(int i = 2; i < splitArr.length; i++){
-                System.out.println(splitArr[i]);
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        if (!answer.equals("")) {
+            String[] splitArr = answer.split(Messages.DEL);
+            for (int i = 0; i < splitArr.length; i++) {
+                arrayList.add(splitArr[i]);
             }
         }
-
+        clm.listServerFiles(arrayList);
     }
 
     @Override
@@ -142,9 +209,9 @@ public class ClientNetworkManager implements SocketThreadListener {
         //auth_request();
     }
 
-    public void auth_request() {
-        String login = "client1";
-        String pass = "123";
+    public void auth_request(String login, String pass) {
+        //String login = "client1";
+        //String pass = "123";
         socketThread.sendAuthRequest(login,pass);
     }
 
@@ -154,7 +221,7 @@ public class ClientNetworkManager implements SocketThreadListener {
         if (msg.equals("успех")) {
             //getFilesFromServer();
             //getServerFilesList();
-            sendFilesToServer();
+            //sendFilesToServer();
         }
         else  System.out.println(msg);
     }
@@ -170,6 +237,11 @@ public class ClientNetworkManager implements SocketThreadListener {
     }
 
 
+    public void addFileInSendRow(String fileName){
+        sendFiles.add(fileName);
+    }
+
+
     public void sendFilesToServer(){
 
         if (!sendFiles.isEmpty())
@@ -179,6 +251,10 @@ public class ClientNetworkManager implements SocketThreadListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addFileInGetRow(String fileName){
+        getFiles.add(fileName);
     }
 
     public void getFilesFromServer(){

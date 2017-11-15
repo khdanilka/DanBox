@@ -10,7 +10,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     private int port;
     private ScanPortServerThread serverSocketThread;
     private Vector<ServerSocketThread> clients = new Vector<>();
-    private String[] users = {"client1","123"};
+    private String[] users = {"client6","123"};
 
     public ServerCore(int port) {
         this.port = port;

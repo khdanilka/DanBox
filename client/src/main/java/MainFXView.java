@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class ClientFX extends Application{
+public class MainFXView extends Application{
 
     public static void main(String[] args) throws Exception {
         launch(args);

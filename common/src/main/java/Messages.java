@@ -63,24 +63,32 @@ public class Messages {
         return createByteMessageFromString(name);
     }
 
-    public static byte[] messageSendFileList(File[] f){
+//    public static byte[] messageSendFileList(File[] f){
+//
+//        StringBuffer stb = new StringBuffer().append(FILE_LIST);
+//        if (f.length == 0) {
+//            stb.append(DEL);
+//            stb.append(0);
+//            return createByteMessageFromString(String.valueOf(stb));
+//        }
+//        stb.append(DEL);
+//        stb.append(1);
+//
+//        for (int i = 0; i < f.length; i++) {
+//           if (f[i].isFile()) {
+//               stb.append(DEL);
+//               stb.append(f[i].getName());
+//           }
+//       }
+//       System.out.println("мы это передаем в списке: " + String.valueOf(stb));
+//       return returnBytesFromString(String.valueOf(stb));
+//    }
 
-        StringBuffer stb = new StringBuffer().append(FILE_LIST);
-        if (f.length == 0) {
-            stb.append(DEL);
-            stb.append(0);
-            return createByteMessageFromString(String.valueOf(stb));
-        }
-        stb.append(DEL);
-        stb.append(1);
-        for (int i = 0; i < f.length; i++) {
-           if (f[i].isFile()) {
-               stb.append(DEL);
-               stb.append(f[i].getName());
-           }
-       }
-       return createByteMessageFromString(String.valueOf(stb));
+    public static byte[] messageSendFileList(String sizeOfStr){
+        String name = FILE_LIST + DEL + sizeOfStr;
+        return createByteMessageFromString(String.valueOf(name));
     }
+
 
 
     private static byte[] createByteMessageFromString(String str){
@@ -88,7 +96,7 @@ public class Messages {
         byte[] retBytes = initByteArray();
         byte[] nameB = returnBytesFromString(str);
 
-        for(int i = 0; i <nameB.length; i++){
+        for(int i = 0; i < nameB.length; i++){
             retBytes[i] = nameB[i];
         }
         return retBytes;

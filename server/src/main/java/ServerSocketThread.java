@@ -47,11 +47,28 @@ public class ServerSocketThread extends SocketThread {
     void sendListOfFiles(){
 
         File[] f = eventListener.getListOfFilesWithPath(this.SERVER_PATH + client_name);
-        byte[] flb = Messages.messageSendFileList(f);
+
+        StringBuffer stb = new StringBuffer();
+
+        if (f != null) {
+            for (int i = 0; i < f.length; i++) {
+                if (f[i].isFile()) {
+                    if (stb.length()!=0) stb.append(Messages.DEL);
+                    stb.append(f[i].getName());
+                }
+            }
+        }
+
+        byte[] flb = Messages.messageSendFileList(String.valueOf(stb.length()));
+
         try {
             out.write(flb);
+            if (stb.length()!=0) out.write(String.valueOf(stb).getBytes());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 }

@@ -57,8 +57,6 @@ public class SocketThread extends Thread{
 
     protected synchronized void saveDataToHost(String fileName, String fileSize) throws IOException {
 
-        //String client = "client5";
-        //String client = client_name;
         String fop = rightPath + client_name;
         //String fop ="./client/src/main/file_storage/" + client;
         File myPath = new File(fop);
@@ -102,77 +100,6 @@ public class SocketThread extends Thread{
         }
 
     }
-//
-//    //client method
-//    void getRequest(String nameOfFile){
-//
-//        try {
-//            byte[] serviceB = Messages.messageGet(nameOfFile);
-//            synchronized (out) {
-//                out.write(serviceB);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//    //client method
-//    void sendAuthRequest(String login, String pass){
-//
-//        byte[] auth = Messages.messageAuth(login,pass);
-//        try {
-//            synchronized (out) {
-//                out.write(auth);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    //client method
-//    void handleAuthAnswer(String login){
-//        System.out.println("обработка входящего сообщения - " + login);
-//        client_name = login;
-//        eventListener.auth_answer("на клиенте все ок");
-//    }
-
-//    //server method
-//    void handleAuthRequest(String login, String pass){
-//
-//        if (eventListener.checkUserInBD(login,pass)) {
-//            sendAuthAnswerAccept(login);
-//            client_name = login;
-//            eventListener.auth_answer("на сервере все ок, юзер на месте " + login);
-//        } else {
-//            sendAuthAnswerError();
-//        }
-//
-//    }
-//
-//    //server method
-//    void sendAuthAnswerAccept(String login){
-//
-//        byte[] accept = Messages.messageAuthAccepted(login);
-//        try {
-//            out.write(accept);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    //server method
-//    void sendAuthAnswerError(){
-//
-//        byte[] error = Messages.messageAuthError("не верный логин");
-//        try {
-//            out.write(error);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
 
     private void writeDataToOut(InputStream ins) throws IOException {
         byte[] bytesData = new byte[16 * 1024];
@@ -184,7 +111,6 @@ public class SocketThread extends Thread{
             }
         }
     }
-
 
     public synchronized void close(){
         interrupt();
