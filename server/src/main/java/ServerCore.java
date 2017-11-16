@@ -39,8 +39,7 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     public void handleIncomingMessage(String str, SocketThread socketThread) {
 
         ServerSocketThread serverSocketThread = (ServerSocketThread) socketThread;
-
-        System.out.println(str);
+        //System.out.println(str);
         String[] splitArr = str.split(Messages.DEL);
 
         switch (splitArr[0]) {
@@ -66,8 +65,13 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
                 break;
             case Messages.DELETE_FILE_FROM_SERVER:
                 serverSocketThread.deleteFileFromServerDirectory(splitArr[1]);
+                break;
+            case Messages.CLIENT_QUIT:
+                serverSocketThread.close();
+                break;
             default:
                 //System.out.println("UNKHOWN request");
+                //serverSocketThread.close();
         }
 
     }
@@ -86,6 +90,12 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
         System.out.println("На стороне сервера есть сокет");
 
         clients.add((ServerSocketThread)socketThread);
+    }
+
+    @Override
+    public void onStopSocketThread(SocketThread socketThread) {
+        clients.remove(socketThread);
+        System.out.println("клиент " + socketThread.client_name + " отключился");
     }
 
     @Override

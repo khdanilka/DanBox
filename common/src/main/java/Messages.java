@@ -13,6 +13,7 @@ public class Messages {
     public static final String FILE_LIST = "/file_list";
     public static final String DELETE_FILE_FROM_SERVER = "/delete_file";
     public static final String FILE_DELETED = "/file_deleted";
+    public static final String CLIENT_QUIT = "/quit";
 
     public static final String DEL = "::";
 
@@ -98,6 +99,11 @@ public class Messages {
 
     public static byte[] messageDeleted(){
         String name = FILE_DELETED + DEL;
+        return createByteMessageFromString(String.valueOf(name));
+    }
+
+    public static byte[] messageQuit(){
+        String name = CLIENT_QUIT;
         return createByteMessageFromString(String.valueOf(name));
     }
 

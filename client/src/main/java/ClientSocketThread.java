@@ -37,6 +37,18 @@ public class ClientSocketThread extends SocketThread {
         }
     }
 
+    void sendQuit(){
+
+        byte[] auth = Messages.messageQuit();
+        try {
+            synchronized (out) {
+                out.write(auth);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //client method
     void handleAuthAnswer(String login){
         System.out.println("обработка входящего сообщения - " + login);
@@ -59,7 +71,7 @@ public class ClientSocketThread extends SocketThread {
 
         if (size.equals("0")) return "";
 
-        byte[] bytes = new byte[Integer.valueOf(size) + 10];
+        byte[] bytes = new byte[Integer.valueOf(size)];
         String str = "";
         try {
             System.out.println("прочитано байт " + in.read(bytes));

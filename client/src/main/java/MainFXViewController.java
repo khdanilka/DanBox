@@ -1,4 +1,5 @@
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -109,6 +110,10 @@ public class MainFXViewController implements MainNetworkManagerListener {
         server_list.setItems(serverFilesList);
     }
 
+    public void startHousekeeping() {
+        clNetworkManager.buybuy();
+    }
+
     public class FileMain {
         private String file;
         public FileMain(String file) {
@@ -149,6 +154,9 @@ public class MainFXViewController implements MainNetworkManagerListener {
         }
 
     }
+
+
+
 
 
 }

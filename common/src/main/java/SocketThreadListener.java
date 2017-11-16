@@ -9,4 +9,5 @@ public interface SocketThreadListener {
 
     void handleIncomingMessage(String str, SocketThread socketThread);
     File[] getListOfFilesWithPath(String url);
+    void onStopSocketThread(SocketThread socketThread);
 }

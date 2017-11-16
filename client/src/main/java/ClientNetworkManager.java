@@ -76,8 +76,8 @@ public class ClientNetworkManager implements SocketThreadListener {
        if (clientNetworkManager == null){
             clientNetworkManager = new ClientNetworkManager(clm, loglistner);
        }
-       if (ClientNetworkManager.clm == null) ClientNetworkManager.clm = clm;
-       if (ClientNetworkManager.logListener == null) ClientNetworkManager.logListener = loglistner;
+       if ((ClientNetworkManager.clm == null) && (clm!=null)) ClientNetworkManager.clm = clm;
+       if ((ClientNetworkManager.logListener == null) && (loglistner!=null)) ClientNetworkManager.logListener = loglistner;
        return clientNetworkManager;
     }
 
@@ -278,5 +278,16 @@ public class ClientNetworkManager implements SocketThreadListener {
             socketThread.getRequest(getFiles.get(0));
             getFiles.remove(0);
         }
+    }
+
+    @Override
+    public void onStopSocketThread(SocketThread socketThread) {
+
+        System.out.println("мы завершили работу");
+    }
+
+    public void buybuy() {
+        socketThread.sendQuit();
+        socketThread.close();
     }
 }

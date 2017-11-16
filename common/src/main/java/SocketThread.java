@@ -43,7 +43,7 @@ public class SocketThread extends Thread{
     public void run() {
         eventListener.readySocketClientThread(this);
         try {
-            while (!isInterrupted())
+            while (!isInterrupted() && !socket.isClosed())
             {
                 byte[] b = new byte[Messages.MESSAGE_SIZE];
                 in.read(b, 0, b.length);
@@ -51,7 +51,15 @@ public class SocketThread extends Thread{
                 eventListener.handleIncomingMessage(str, this);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+
+        } finally {
+            try {
+                if (!socket.isClosed()) socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            eventListener.onStopSocketThread(this);
         }
     }
 
