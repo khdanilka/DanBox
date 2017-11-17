@@ -16,9 +16,6 @@ public class SocketThread extends Thread{
     protected boolean isServerThread;
     private String rightPath;
 
-    public void setClient_name(String client_name) {
-        this.client_name = client_name;
-    }
 
     public SocketThread(SocketThreadListener eventListener, Socket socket, boolean isServerThread){
         this.eventListener = eventListener;
@@ -68,7 +65,7 @@ public class SocketThread extends Thread{
         String fop = rightPath + client_name;
         File myPath = new File(fop);
 
-        if (!myPath.mkdirs()) System.out.println(myPath.getPath());
+        myPath.mkdirs();
 
         OutputStream outS = new FileOutputStream(fop +"/" + fileName);
 
@@ -92,7 +89,7 @@ public class SocketThread extends Thread{
     protected void sendDataToHost(String nameOfFIle) throws IOException {
 
         File file = new File(rightPath + client_name + "/" + nameOfFIle); // server data
-        System.out.println("размер файла" + file.length());
+        //System.out.println("размер файла" + file.length());
         try (InputStream ins = new FileInputStream(file))
         {
             byte[] serviceB = Messages.messagePost(nameOfFIle,String.valueOf(file.length()));
@@ -111,7 +108,6 @@ public class SocketThread extends Thread{
         synchronized (out) {
             while ((count = ins.read(bytesData)) > 0) {
                 out.write(bytesData, 0, count);
-
             }
         }
     }

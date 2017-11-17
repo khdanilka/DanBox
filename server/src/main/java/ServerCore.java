@@ -14,7 +14,10 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     private int port;
     private ScanPortServerThread serverSocketThread;
     private Vector<ServerSocketThread> clients = new Vector<>();
-    private String[] users = {"client6","123"};
+    //private String[] users = {"client6","123"};
+
+    SQLAutorizeManager sqlAutorizeManager = new SQLAutorizeManager();
+
 
     public ServerCore(int port) {
         this.port = port;
@@ -64,7 +67,8 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
                 serverSocketThread.sendListOfFiles();
                 break;
             case Messages.DELETE_FILE_FROM_SERVER:
-                serverSocketThread.deleteFileFromServerDirectory(splitArr[1]);
+                //serverSocketThread.deleteFileFromServerDirectory(splitArr[1]);
+                deleteFileFromServerDirectory(splitArr[1],serverSocketThread);
                 break;
             case Messages.CLIENT_QUIT:
                 serverSocketThread.close();
@@ -101,9 +105,15 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     @Override
     public boolean checkUserInBD(String login, String pass) {
 
-        if (users[0].equals(login) && users[1].equals(pass)) return true;
-
+//        if (users[0].equals(login) && users[1].equals(pass)) return true;
+//
+//        return false;
+        sqlAutorizeManager.init();
+        if (sqlAutorizeManager.getNick(login,pass)!= null) return true;
+        sqlAutorizeManager.dispose();
         return false;
+
+
     }
 
     @Override
@@ -127,6 +137,19 @@ public class ServerCore implements ServerSocketThreadListener, SocketThreadListe
     }
 
 
+    public void deleteFileFromServerDirectory(String fileName, ServerSocketThread socketThread){
+
+        String stringPath = ServerSocketThread.beginPath + socketThread.client_name + "/" + fileName;
+        Path pathToDel = Paths.get(URI.create("file:" + stringPath));
+
+        try {
+            if (Files.deleteIfExists(pathToDel)) socketThread.sendSuccessDeleted();
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
+        }
+
+    }
 
 
 }

@@ -140,11 +140,9 @@ public class ClientNetworkManager implements SocketThreadListener {
                 break;
             case Messages.AUTH_ACCEPT:
                 clientSocketThread.handleAuthAnswer(splitArr[1]);
-                //auth_answer("успех");
                 logListener.authResponse(SUCCESS);
                 break;
             case Messages.AUTH_ERROR:
-                //auth_answer("авторизация не удалась");
                 logListener.authResponse(ERROR);
                 break;
             case Messages.SUCCESS:

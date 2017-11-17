@@ -27,8 +27,6 @@ public class LoginController implements LoginNetworkManagerListener {
     }
 
 
-
-
     public void logIn(ActionEvent actionEvent) {
         String login = txtLogin.getText();
         String pass = txtPass.getText();

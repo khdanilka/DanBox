@@ -9,6 +9,9 @@ import java.nio.file.Paths;
 
 public class ServerSocketThread extends SocketThread {
 
+
+    static final String beginPath =   System.getProperty("user.dir") + "/server/src/main/file_storage/";
+
     public ServerSocketThread(SocketThreadListener eventListener, Socket socket) {
         super(eventListener, socket, true);
     }
@@ -84,21 +87,21 @@ public class ServerSocketThread extends SocketThread {
 
     }
 
-    public void deleteFileFromServerDirectory(String fileName){
 
-        String k = "/server/src/main/file_storage/";
-        String dst = System.getProperty("user.dir") + k + client_name + "/" + fileName;
 
-        Path p = Paths.get(URI.create("file:" + dst));
-
-        try {
-            if (Files.deleteIfExists(p)) sendSuccessDeleted();
-        } catch (IOException x) {
-            // File permission problems are caught here.
-            System.err.println(x);
-        }
-
-    }
+//    public void deleteFileFromServerDirectory(String fileName){
+//
+//        String stringPath = beginPath + client_name + "/" + fileName;
+//        Path pathToDel = Paths.get(URI.create("file:" + stringPath));
+//
+//        try {
+//            if (Files.deleteIfExists(pathToDel)) sendSuccessDeleted();
+//        } catch (IOException x) {
+//            // File permission problems are caught here.
+//            System.err.println(x);
+//        }
+//
+//    }
 
     public void sendSuccessDeleted(){
 
