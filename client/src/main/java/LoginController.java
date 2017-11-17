@@ -18,17 +18,22 @@ public class LoginController implements LoginNetworkManagerListener {
     @FXML
     private PasswordField txtPass;
 
-    ClientNetworkManager clNetwork = ClientNetworkManager.getClientNetworkManager(null,this);
+    ClientNetworkManager clNetwork = ClientNetworkManager.getClientNetworkManager();
+
+
+    @FXML
+    private void initialize() {
+        clNetwork.setLogListener(this);
+    }
+
+
 
 
     public void logIn(ActionEvent actionEvent) {
-
         String login = txtLogin.getText();
         String pass = txtPass.getText();
-
         clNetwork.auth_request(login,pass);
         this.actionEvent = actionEvent;
-
     }
 
     @Override

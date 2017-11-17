@@ -51,9 +51,9 @@ public class ClientSocketThread extends SocketThread {
 
     //client method
     void handleAuthAnswer(String login){
-        System.out.println("обработка входящего сообщения - " + login);
+        //System.out.println("обработка входящего сообщения - " + login);
         client_name = login;
-        eventListener.auth_answer("на клиенте все ок");
+        //eventListener.auth_answer("на клиенте все ок");
     }
 
     void getFilesRequest(){
@@ -74,7 +74,7 @@ public class ClientSocketThread extends SocketThread {
         byte[] bytes = new byte[Integer.valueOf(size)];
         String str = "";
         try {
-            System.out.println("прочитано байт " + in.read(bytes));
+            in.read(bytes);
             str = new String(bytes, "UTF-8");
 
         } catch (IOException e) {

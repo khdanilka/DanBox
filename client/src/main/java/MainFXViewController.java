@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class MainFXViewController implements MainNetworkManagerListener {
 
 
-    ClientNetworkManager clNetworkManager = ClientNetworkManager.getClientNetworkManager(this, null);
+    ClientNetworkManager clNetworkManager = ClientNetworkManager.getClientNetworkManager();
 
     @FXML
     private TableView client_list;
@@ -35,14 +35,7 @@ public class MainFXViewController implements MainNetworkManagerListener {
     @FXML
     private void initialize() {
 
-       // m.fillTestData();
-        //columnInfo.setCellValueFactory(new PropertyValueFactory<>("fio"));
-
-        //columnServer.setCellValueFactory(new PropertyValueFactory<>("phone"));
-
-        //client_list.setItems(m.getPersonList());
-
-        //server_list.setItems(m.getPersonList());
+        clNetworkManager.setMainNetworkManagerListener(this);
     }
 
     @FXML
@@ -97,14 +90,14 @@ public class MainFXViewController implements MainNetworkManagerListener {
     private ObservableList<FileMain> serverFilesList;
 
     @Override
-    public void listClientsFiles(ArrayList<String> arrayList) {
+    public void updateListClientsFiles(ArrayList<String> arrayList) {
         clientFilesList = FXCollections.observableList(getClientsFileFrom(arrayList));
         columnInfo.setCellValueFactory(new PropertyValueFactory<>("file"));
         client_list.setItems(clientFilesList);
     }
 
     @Override
-    public void listServerFiles(ArrayList<String> arrayList) {
+    public void updateListServerFiles(ArrayList<String> arrayList) {
         serverFilesList = FXCollections.observableList(getClientsFileFrom(arrayList));
         columnServer.setCellValueFactory(new PropertyValueFactory<>("file"));
         server_list.setItems(serverFilesList);

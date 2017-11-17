@@ -66,7 +66,6 @@ public class SocketThread extends Thread{
     protected synchronized void saveDataToHost(String fileName, String fileSize) throws IOException {
 
         String fop = rightPath + client_name;
-        //String fop ="./client/src/main/file_storage/" + client;
         File myPath = new File(fop);
 
         if (!myPath.mkdirs()) System.out.println(myPath.getPath());
@@ -92,10 +91,7 @@ public class SocketThread extends Thread{
 
     protected void sendDataToHost(String nameOfFIle) throws IOException {
 
-        //String client = "client1";
-        //String client = client_name;
         File file = new File(rightPath + client_name + "/" + nameOfFIle); // server data
-        //File file = new File("./server/src/main/file_storage/" + client + "/" + nameOfFIle);
         System.out.println("размер файла" + file.length());
         try (InputStream ins = new FileInputStream(file))
         {
@@ -124,6 +120,8 @@ public class SocketThread extends Thread{
         interrupt();
         try {
             socket.close();
+            out.close();
+            in.close();
         } catch (IOException e ){
             e.printStackTrace();
         }

@@ -59,7 +59,7 @@ public class MainFXView extends Application{
     {
         super.stop();
 
-        ClientNetworkManager.getClientNetworkManager(null,null).buybuy();
+        ClientNetworkManager.getClientNetworkManager().buybuy();
 
         Platform.exit();
         System.exit(0);
